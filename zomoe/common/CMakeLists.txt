@@ -1,6 +1,6 @@
-# 要编译的源码文件
+
 SET (SYS_SRCS 
-	hello.cc      
+	#lockfreeQueue.cc      
 )
 
 # 编译库文件
