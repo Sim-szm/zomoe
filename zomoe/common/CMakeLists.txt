@@ -1,6 +1,6 @@
 
 SET (SYS_SRCS 
-	#lockfreeQueue.cc      
+	lockfreeQueue.cc      
 )
 
 # 编译库文件

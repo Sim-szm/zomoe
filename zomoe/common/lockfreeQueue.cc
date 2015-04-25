@@ -18,13 +18,18 @@
 #include <sys/ipc.h>
 #include <stdlib.h>
 
+#include <stdint.h>
+
 #include "lockfreeQueue.h"
 
 #pragma pack()
 
+#ifndef  INT32_MAX
+#define INT32_MAX      (2147483647) 
+#endif
+
 namespace common {
 
-#include <stdint.h>
 #define LIST_END (-1)
 
 #define UNIT_HEAD(queue,offset)  ((unit_head*)((queue)+sizeof(queue_head)+\
