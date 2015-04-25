@@ -13,8 +13,10 @@
 #define MUTEX_H
 
 #include <pthread.h>
-
+#include <cstring>
 namespace zomoe { namespace network{
+
+static std::string fucktest = "hello zomoe !"; 
 
 class mutex_lock{
 public:

@@ -17,7 +17,7 @@
 #include <zomoe/network/condition.h>
 int main(int argc, char *argv[])
 {
-	std::cout << "hello zomoe ! " <<zomoe::network::fucktest<<std::endl;
+	std::cout << zomoe::network::fucktest << std::endl;
 	return 0;
 }
 
