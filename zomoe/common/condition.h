@@ -15,7 +15,7 @@
 #include <pthread.h>
 #include "mutex.h"
 
-namespace zomoe { namespace network {
+namespace zomoe { namespace common {
 
 class condition{
 public:

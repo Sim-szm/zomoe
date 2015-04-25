@@ -14,7 +14,7 @@
 
 #include <pthread.h>
 #include <cstring>
-namespace zomoe { namespace network{
+namespace zomoe { namespace common{
 
 static std::string fucktest = "hello zomoe !"; 
 
