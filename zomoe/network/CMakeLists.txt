@@ -4,7 +4,10 @@ SET (SYS_SRCS
 )
 
 # 编译库文件
-ADD_LIBRARY (zomoe_network ${SYS_SRCS})
+#ADD_LIBRARY (zomoe_network ${SYS_SRCS})
+
+#可执行文件
+ADD_EXECUTABLE(zomoe_network ${SYS_SRCS})
 
 # 设置附加链接库
 TARGET_LINK_LIBRARIES (zomoe_network pthread)

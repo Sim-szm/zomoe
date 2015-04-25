@@ -13,9 +13,11 @@
  */
 
 #include <iostream>
+#include <zomoe/network/mutex.h>
+#include <zomoe/network/condition.h>
 int main(int argc, char *argv[])
 {
-	std::cout << "hello zomoe ! " <<std::endl;
+	std::cout << "hello zomoe ! " <<zomoe::network::fucktest<<std::endl;
 	return 0;
 }
 
