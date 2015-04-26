@@ -20,26 +20,33 @@
 #include <netinet/tcp.h>
 #include <errno.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/time.h>
+#include <time.h>
+#include <zomoe/network/netaddress.h>
+
+#define KEEPALIVE 0
+#define LINGER 0
+#define NODELAY 0
+#define TIMEOUT 0
+#define BACKLOG 20
 
 namespace zomoe { namespace network {
 
 typedef struct sockaddr SA;
 
-class netaddress;
-
-SA* sockaddr_cast(struct sockaddr_in* addr){
-	return static_cast<SA*> (implicit_cast<void*> addr)
-}
-
 static inline int set_nonblocking(int fd){
-	if(fcntl(fd,F_SETFL,fcntl(fd,GETFD,0)|O_NON_BLOCK)== -1){
+	if(fcntl(fd,F_SETFL,fcntl(fd,F_GETFL,0)|O_NONBLOCK)== -1){
 		return -1;
 	}
 	return 0;
 }
 
-void set_close_onexec(int sockfd) {
-	int ret = fcntl(fd,F_SETFL,fcntl(fd,GETFD,0)|FD_CLOEXEC);
+static inline int set_close_onexec(int sockfd) {
+	if(fcntl(sockfd,F_SETFD,fcntl(sockfd,F_GETFD,0)|FD_CLOEXEC) == -1) {
+		return -1;
+	}
+	return 0;
 }
 
 
@@ -54,29 +61,29 @@ public:
 		return m_sockfd;
 	}
 	int new_socket();
-	int set_socketopt(int sockfd);
+	int set_socketopt(int sockfd,unsigned int timeout);
 	void set_reuseaddr(bool on);
-	void bind_t(const netaddress& localaddr);
-	void listen_t();
-	int accept_t(netaddress* address);
+	void bind_t(zomoe::network::netaddress& localaddr);
+	void listen_t(int listenfd);
+	int accept_t(zomoe::network::netaddress* address);
 	void shutdown_write();
 
 private:
 	const int m_sockfd;
-	netaddress client_addr;
+	zomoe::network::netaddress m_addr;
 };
 
 int socket_event::new_socket(){
-	int sockfd = socket(AF_INET,SOCK_STERAM,IPPROTO_TCP);
+	int sockfd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
 	if (sockfd < 0){
-		perror("socket!")
+		perror("socket!");
 	}
 	set_nonblocking(sockfd);
 	set_close_onexec(sockfd);
 	return sockfd;
 }
 int socket_event::set_socketopt(int sockfd, unsigned int timeout){
-	int result=0,flag=0;
+	int result=0,flag=0,optval = 1;
     	do{
         	if (KEEPALIVE){
 	            //set tcp_keepAlive
@@ -115,11 +122,11 @@ int socket_event::set_socketopt(int sockfd, unsigned int timeout){
 	            }
 	        }
 	        if (LINGER){
-	            struct linger optval;
-		    optval.l_onoff = true;
-	            optval.l_linger = timeout;
+	            struct linger optval_l;
+		    optval_l.l_onoff = true;
+	            optval_l.l_linger = timeout;
 	            result = setsockopt(sockfd, SOL_SOCKET,\
-        	                         SO_LINGER, &optval,
+        	                         SO_LINGER, &optval_l,
                 	                (socklen_t) sizeof(struct linger));
 	            if (-1 == result){
         	        flag=1;
@@ -127,6 +134,10 @@ int socket_event::set_socketopt(int sockfd, unsigned int timeout){
         	    }
 	        }
 	        if (NODELAY){
+	            
+	            struct timeval waittime;
+        	    waittime.tv_sec = timeout;
+	            waittime.tv_usec = 0;
 	            result = setsockopt(sockfd, SOL_TCP, \
         	                        TCP_NODELAY, &optval,\
                 	                 sizeof(optval));
@@ -134,7 +145,7 @@ int socket_event::set_socketopt(int sockfd, unsigned int timeout){
         	        flag=1;
 	                break;
         	    }
-	            result = setsockopt(sock, SOL_SOCKET, \
+	            result = setsockopt(sockfd, SOL_SOCKET, \
         	                        SO_RCVTIMEO, &waittime,\
                 	                    sizeof(struct timeval));
 	            if (-1 == result){
@@ -163,12 +174,15 @@ int socket_event::set_socketopt(int sockfd, unsigned int timeout){
 }
 
 void socket_event::set_reuseaddr(bool on){
-	int opt = on ? 1 : 0;
-	setsockopt(&m_sockfd,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
+	int opt;
+	if (on == true) {
+		opt = on ? 1 : 0;
+		setsockopt(m_sockfd,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
+	}
 }
 
-void socket_event::bind_t(const netaddress& localaddr) {
-	int ret = bind(m_sockfd,sockaddr_cast(&(localaddr.get_sock_netaddr())),sizeof(struct sockaddr));
+void socket_event::bind_t(zomoe::network::netaddress& localaddr) {
+	int ret = bind(m_sockfd,(SA*)&(localaddr.get_sock_netaddr()),sizeof(SA));
 	if (ret < 0){
 		perror("bind error !");
 	}
@@ -181,7 +195,7 @@ void socket_event::listen_t(int listenfd) {
 	}
 }
 
-int socket_event::accept_t(netaddress& address){
+int socket_event::accept_t(zomoe::network::netaddress* address){
 
         do{
             struct sockaddr_in client_addr;
@@ -207,9 +221,7 @@ int socket_event::accept_t(netaddress& address){
 	    return connfd;
 
         }while(false);
-    }
-    return 0;
-
+	return 0;
 }
 
 void socket_event::shutdown_write(){
@@ -218,6 +230,7 @@ void socket_event::shutdown_write(){
 		perror("shutdown_write error !");
 	}
 }
+
 }}
 #endif 
 

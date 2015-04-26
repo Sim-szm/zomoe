@@ -14,22 +14,28 @@
 
 #include <iostream>
 #include <netinet/in.h>
-
+#include <arpa/inet.h>
+#include <netinet/in.h>
 namespace zomoe { namespace network {
 
 class netaddress {
 public:
+	netaddress(){
+
+	}
+	~netaddress(){
+	}
 	explicit netaddress(uint16_t port){
 		bzero(&m_addr,sizeof(m_addr));
 		m_addr.sin_family=AF_INET;
-		m_addr.sin_addr.s_addr=hontl(INADDR_ANY);
-		m_addr.sin_port=honts(port);
+		m_addr.sin_addr.s_addr=htonl(INADDR_ANY);
+		m_addr.sin_port=htons(port);
 	}
 
 	netaddress(const std::string& ip_addr,uint16_t port){
 		bzero(&m_addr,sizeof(m_addr));
 		m_addr.sin_family=AF_INET;
-		m_addr.sin_port=honts(port);
+		m_addr.sin_port=htons(port);
 		inet_pton(AF_INET,ip_addr.c_str(),&(m_addr.sin_addr));
 	}
 
@@ -46,7 +52,7 @@ public:
 	}
 private:
 	struct sockaddr_in m_addr;
-}
+};
 
 }}
 

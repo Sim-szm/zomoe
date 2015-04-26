@@ -15,6 +15,9 @@
 #include <iostream>
 #include <zomoe/common/mutex.h>
 #include <zomoe/common/condition.h>
+#include <zomoe/network/socket_base.h>
+#include <zomoe/network/netaddress.h>
+
 int main(int argc, char *argv[])
 {
 	std::cout << zomoe::common::fucktest << std::endl;
