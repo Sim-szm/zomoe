@@ -9,5 +9,7 @@
 #### 2015.4.26 :
 ----------------------
  添加socket_base封装,fix detail logic bugs
-
+#### 2015.4.27 :
+----------------------
+添加server_socket 基础,eventkey（目前只是定义）
               

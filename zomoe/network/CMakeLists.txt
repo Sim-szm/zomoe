@@ -1,6 +1,8 @@
 # 要编译的源码文件
 SET (SYS_SRCS 
 	hello.cc      
+	socket_base.cc
+
 )
 
 # 编译库文件

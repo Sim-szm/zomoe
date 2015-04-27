@@ -1,12 +1,12 @@
 /* =====================================================================================
- * 
+ *
  *       Filename:  netaddress.h
  *       Created :  2015年04月26日 16时40分55秒
  *       Email   :  xianszm007@gmail.com
  *       Compiler:  g++
  *       Author  :  zomoe
  *       Company :  free coder as aspire, but work for life
- * 
+ *
  * =====================================================================================
  */
 #ifndef NETADDRESS_H
@@ -15,13 +15,13 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netinet/in.h>
+#include <cstring>
+
 namespace zomoe { namespace network {
 
 class netaddress {
 public:
 	netaddress(){
-
 	}
 	~netaddress(){
 	}
