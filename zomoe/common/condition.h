@@ -10,7 +10,7 @@
  * =====================================================================================
  */
 #ifndef CONDITION_H
-#define CONDITION_h
+#define CONDITION_H
 
 #include <pthread.h>
 #include "mutex.h"
